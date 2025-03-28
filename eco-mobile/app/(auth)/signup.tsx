@@ -12,6 +12,9 @@ import { login, signup } from '@/api/auth';
 import { err } from 'react-native-svg/lib/typescript/xml';
 import { useAuth } from '@/store/authStore';
 import { Redirect, router, Stack } from 'expo-router';
+import Alert from '@/components/Alert';
+import React from 'react';
+
 
 export default function SignupScreen() {
   const [showPassword, setShowPassword] = useState(false);
@@ -23,19 +26,7 @@ export default function SignupScreen() {
   const setToken = useAuth((s) => s.setToken);
   const isLoggedIn = useAuth((s) => !!s.token);
 
-  const loginMutation = useMutation({
-    mutationFn: () => login(email, password),
-    onSuccess: (data) => {
-      console.log('SUccess: ', data);
-      if (data.user && data.token) {
-        setUser(data.user);
-        setToken(data.token);
-      }
-    },
-    onError: () => {
-      console.log('Error');
-    },
-  });
+  const [error, setError] = useState<Error | null>(null);
 
   const signupMutation = useMutation({
     mutationFn: () => signup(name, email, password, address),
@@ -48,8 +39,11 @@ export default function SignupScreen() {
     },
     onError: (error) => {
       console.log('Error: ', error);
+      setError(error);
     },
   });
+
+  
 
   const handleState = () => {
     setShowPassword((showState) => {
@@ -62,8 +56,10 @@ export default function SignupScreen() {
   }
 
   return (
+    <>
+    {error && <Alert error={error} onClose={() => setError(null)} />}
     <FormControl
-      isInvalid={loginMutation.error || signupMutation.error}
+      isInvalid={signupMutation.error}
       className="p-4 border rounded-lg max-w-[500px] border-outline-300 bg-white m-2"
     >
       <Stack.Screen options={{ title: 'Sign up' }}/>
@@ -110,13 +106,14 @@ export default function SignupScreen() {
             variant="outline"
             onPress={() => signupMutation.mutate()}
           >
-            <ButtonText>Sign up</ButtonText>
+            <ButtonText>Sign in</ButtonText>
           </Button>
           <Button className="flex-1" onPress={() => router.push('/login')}>
             <ButtonText>i have an account</ButtonText>
           </Button>
         </HStack>
       </VStack>
-    </FormControl>
+      </FormControl>
+    </>
   );
 }

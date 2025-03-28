@@ -13,7 +13,7 @@ import { useQuery } from '@tanstack/react-query';
 import { fetchProductById } from '@/api/products';
 import { useCart } from '@/store/cartStore';
 import { ActivityIndicator } from 'react-native';
-
+import Alert from '@/components/Alert';
 export default function detailsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
 
@@ -37,7 +37,7 @@ export default function detailsScreen() {
   }
 
   if (error) {
-    return <Text>Product not found!</Text>;
+    Alert(error);
   }
 
   return (

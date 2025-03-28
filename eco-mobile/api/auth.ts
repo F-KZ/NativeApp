@@ -12,7 +12,7 @@ export async function login(email: string, password: string) {
   const data = await res.json();
   if (!res.ok) {
     console.log(data);
-    throw Error('Failed to login');
+    throw Error(data.error);
   }
   return data;
 }
@@ -29,7 +29,7 @@ export async function signup(name: string, email: string, password: string, addr
   const data = await res.json();
   console.log(`from signup: ${data}`);
   if (!res.ok) {
-    throw Error('Failed to login');
+    throw Error(data.error);
   }
   return data;
 }

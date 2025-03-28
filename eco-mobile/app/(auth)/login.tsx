@@ -12,11 +12,14 @@ import { login, signup } from '@/api/auth';
 import { err } from 'react-native-svg/lib/typescript/xml';
 import { useAuth } from '@/store/authStore';
 import { Redirect, router, Stack } from 'expo-router';
+import Alert from '@/components/Alert';
+import React from 'react';
 
 export default function LoginScreen() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState<Error | null>(null);
 
   const setUser = useAuth((s) => s.setUser);
   const setToken = useAuth((s) => s.setToken);
@@ -25,28 +28,14 @@ export default function LoginScreen() {
   const loginMutation = useMutation({
     mutationFn: () => login(email, password),
     onSuccess: (data) => {
-      console.log('SUccess: ', data);
       if (data.user && data.token) {
         setUser(data.user);
         setToken(data.token);
       }
     },
-    onError: () => {
-      console.log('Error');
-    },
-  });
-
-  const signupMutation = useMutation({
-    mutationFn: () => signup(email, password),
-    onSuccess: (data) => {
-      console.log('SUccess sign up: ', data);
-      if (data.user && data.token) {
-        setUser(data.user);
-        setToken(data.token);
-      }
-    },
-    onError: (error) => {
-      console.log('Error: ', error);
+    onError: (error) => { 
+      setError(error);
+     
     },
   });
 
@@ -61,49 +50,51 @@ export default function LoginScreen() {
   }
 
   return (
-    <FormControl
-      isInvalid={loginMutation.error || signupMutation.error}
-      className="p-4 border rounded-lg max-w-[500px] border-outline-300 bg-white m-2"
-    >
+    <>
+      {error && <Alert error={error} onClose={() => setError(null)} />}
+      <FormControl
+        isInvalid={!!loginMutation.error}
+        className="p-4 border rounded-lg max-w-[500px] border-outline-300 bg-white m-2"
+      >
         <Stack.Screen options={{ title: 'Login' }}/>
-      <VStack space="xl">
-        <Heading className="text-typography-900 leading-3 pt-3">Login</Heading>
-        <VStack space="xs">
-          <Text className="text-typography-500 leading-1">Email</Text>
-          <Input>
-            <InputField value={email} onChangeText={setEmail} type="text" />
-          </Input>
-        </VStack>
-        <VStack space="xs">
-          <Text className="text-typography-500 leading-1">Password</Text>
-          <Input className="text-center">
-            <InputField
-              value={password}
-              onChangeText={setPassword}
-              type={showPassword ? 'text' : 'password'}
-            />
-            <InputSlot className="pr-3" onPress={handleState}>
-              {/* EyeIcon, EyeOffIcon are both imported from 'lucide-react-native' */}
-              <InputIcon
-                as={showPassword ? EyeIcon : EyeOffIcon}
-                className="text-darkBlue-500"
+        <VStack space="xl">
+          <Heading className="text-typography-900 leading-3 pt-3">Login</Heading>
+          <VStack space="xs">
+            <Text className="text-typography-500 leading-1">Email</Text>
+            <Input>
+              <InputField value={email} onChangeText={setEmail} type="text" />
+            </Input>
+          </VStack>
+          <VStack space="xs">
+            <Text className="text-typography-500 leading-1">Password</Text>
+            <Input className="text-center">
+              <InputField
+                value={password}
+                onChangeText={setPassword}
+                type={showPassword ? 'text' : 'password'}
               />
-            </InputSlot>
-          </Input>
+              <InputSlot className="pr-3" onPress={handleState}>
+                <InputIcon
+                  as={showPassword ? EyeIcon : EyeOffIcon}
+                  className="text-darkBlue-500"
+                />
+              </InputSlot>
+            </Input>
+          </VStack>
+          <HStack space="sm">
+            <Button
+              className="flex-1"
+              variant="outline"
+              onPress={() => router.push('/signup')}
+            >
+              <ButtonText>Sign up</ButtonText>
+            </Button>
+            <Button className="flex-1" onPress={() => loginMutation.mutate()}>
+              <ButtonText>Log in</ButtonText>
+            </Button>
+          </HStack>
         </VStack>
-        <HStack space="sm">
-          <Button
-            className="flex-1"
-            variant="outline"
-            onPress={() => router.push('/signup')}
-          >
-            <ButtonText>Sign up</ButtonText>
-          </Button>
-          <Button className="flex-1" onPress={() => loginMutation.mutate()}>
-            <ButtonText>Log in</ButtonText>
-          </Button>
-        </HStack>
-      </VStack>
-    </FormControl>
+      </FormControl>
+    </>
   );
 }
