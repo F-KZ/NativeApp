@@ -26,11 +26,12 @@ router.post('/register', validateData(createUserSchema), async (req, res, next) 
     const missingFields = requiredFields.filter(field => !req.cleanBody[field]);
 
     if (missingFields.length > 0) {
-      return res.status(400).json({ 
+       res.status(400).json({ 
         error: 'Champs manquants', 
         missingFields,
         message: `Les champs suivants sont requis: ${missingFields.join(', ')}`
       });
+      return;
     }
 
     const { email, password, name, address, ...restData } = req.cleanBody;
@@ -38,17 +39,18 @@ router.post('/register', validateData(createUserSchema), async (req, res, next) 
     // Validation email améliorée
     const emailError = validateEmail(email);
     if (emailError) {
-      return res.status(400).json({ 
-        error: 'Validation failed',
-        details: emailError.message 
+       res.status(400).json({ 
+        error: emailError.message 
       });
+      return;
     }
 
     // Validation du mot de passe
     if (password.length < 8) {
-      return res.status(400).json({
+       res.status(400).json({
         error: 'Le mot de passe doit contenir au moins 8 caractères'
       });
+      return;
     }
 
     // Vérification de l'existence de l'utilisateur dans une transaction
@@ -60,9 +62,10 @@ router.post('/register', validateData(createUserSchema), async (req, res, next) 
     });
 
     if (existingUser.length > 0) {
-      return res.status(409).json({ 
+       res.status(409).json({ 
         error: 'Un utilisateur avec cet email existe déjà' 
       });
+      return;
     }
 
     // Hash sécurisé du mot de passe

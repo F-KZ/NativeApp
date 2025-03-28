@@ -113,51 +113,43 @@ export default function CartScreen() {
 
   return (
     <View style={styles.container}>
-      <FlatList
-        data={items}
-        contentContainerClassName="gap-2 max-w-[960px] w-full mx-auto p-2"
-        renderItem={({ item }: { item: CartItem }) => (
-          <HStack className="bg-white p-3 items-center">
-            <VStack space="sm" className="flex-1 mr-4">
-              <Text bold numberOfLines={1} className="max-w-[200px]">{item.product.name}</Text>
-              <Text>$ {item.product.price}</Text>
-            </VStack>
-            <Text className="w-8 text-center">{item.quantity}</Text>
-            <Pressable onPress={() => removeProduct(item.product.id)} className="w-8 ml-4">
-              <Icon as={Trash2} />
-            </Pressable>
-          </HStack>
-        )}
-
-        ListFooterComponent={() => (
-          <VStack space="md" className="mt-4">
-            <HStack className="justify-between px-4">
-              <Text bold>Total:</Text>
-              <Text bold>$ {totalCart(items).toFixed(2)}</Text>
-            </HStack>
-            {user ? (
-      <Button onPress={() => router.push('/checkout')} style={styles.checkoutButton}>
-        <ButtonText>Proceed to Checkout</ButtonText>
-      </Button>
-      ) : (
-        <Button onPress={() => router.push('/login')} style={styles.checkoutButton}>
-          <ButtonText>Login to Checkout</ButtonText>
-        </Button>
-      )}
-          </VStack>
-        )}
-      />
       {user ? (
-      <Button onPress={() => router.push('/checkout')} style={styles.checkoutButton}>
-        <ButtonText>Proceed to Checkout</ButtonText>
-      </Button>
-      ) : (
-        <Button onPress={() => router.push('/login')} style={styles.checkoutButton}>
-          <ButtonText>Login to Checkout</ButtonText>
-        </Button>
+    <FlatList
+      data={items}
+      contentContainerClassName="gap-2 max-w-[960px] w-full mx-auto p-2"
+      renderItem={({ item }: { item: CartItem }) => (
+        <HStack className="bg-white p-3 items-center">
+          <VStack space="sm" className="flex-1 mr-4">
+            <Text bold numberOfLines={1} className="max-w-[200px]">{item.product.name}</Text>
+            <Text>$ {item.product.price}</Text>
+          </VStack>
+          <Text className="w-8 text-center">{item.quantity}</Text>
+          <Pressable onPress={() => removeProduct(item.product.id)} className="w-8 ml-4">
+            <Icon as={Trash2} />
+          </Pressable>
+        </HStack>
       )}
-    </View>
-  );
+
+      ListFooterComponent={() => (
+        <VStack space="md" className="mt-4">
+          <HStack className="justify-between px-4">
+            <Text bold>Total:</Text>
+            <Text bold>$ {totalCart(items).toFixed(2)}</Text>
+          </HStack>
+          
+    <Button onPress={() => router.push('/checkout')} style={styles.checkoutButton}>
+      <ButtonText>Proceed to Checkout</ButtonText>
+    </Button>
+        </VStack>
+      )}
+      />
+    ) : (
+      <Button onPress={() => router.push('/login')} style={styles.checkoutButton}>
+        <ButtonText>Login to Checkout</ButtonText>
+      </Button>
+    )}
+  </View>
+);
 }
 
 const styles = StyleSheet.create({

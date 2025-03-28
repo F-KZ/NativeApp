@@ -3,7 +3,7 @@ import React, { useEffect } from 'react'
 import "@/global.css";
 import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider'
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
-import { Icon } from '@/components/ui/icon';
+import { Icon, BellIcon } from '@/components/ui/icon';
 import { ShoppingCart } from 'lucide-react-native';
 import { Pressable } from 'react-native';
 import { useCart } from '@/store/cartStore';
@@ -36,13 +36,19 @@ export default function RootLayout() {
           <Stack
             screenOptions={{
               headerRight: () =>
-                cartItemsNum > 0 && (
+                cartItemsNum > 0 && isLoggedIn ? (
                   <Link href={'/cart'} asChild>
                     <Pressable className="flex-row gap-2">
                       <Icon as={ShoppingCart} />
                       <Text>{cartItemsNum}</Text>
                     </Pressable>
                   </Link>
+                ) : (
+                  
+                    <Pressable className="flex-row gap-2">
+                      <Icon as={BellIcon} />
+                    </Pressable>
+                
                 ),
             }}
           >
